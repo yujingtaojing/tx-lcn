@@ -15,6 +15,11 @@
  */
 package com.codingapi.txlcn.tm.txmsg.transaction;
 
+import java.io.Serializable;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.codingapi.txlcn.common.exception.TransactionException;
 import com.codingapi.txlcn.common.exception.TxManagerException;
 import com.codingapi.txlcn.logger.TxLogger;
@@ -24,11 +29,8 @@ import com.codingapi.txlcn.tm.core.TransactionManager;
 import com.codingapi.txlcn.tm.txmsg.RpcExecuteService;
 import com.codingapi.txlcn.tm.txmsg.TransactionCmd;
 import com.codingapi.txlcn.txmsg.RpcClient;
+import com.codingapi.txlcn.txmsg.netty.bean.SocketManager;
 import com.codingapi.txlcn.txmsg.params.JoinGroupParams;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.io.Serializable;
 
 /**
  * Description:
@@ -65,7 +67,8 @@ public class JoinGroupExecuteService implements RpcExecuteService {
             txLogger.txTrace(transactionCmd.getGroupId(), joinGroupParams.getUnitId(), "unit:{} try join group:{}",
                     joinGroupParams.getUnitId(), transactionCmd.getGroupId());
             transactionManager.join(dtxContext, joinGroupParams.getUnitId(), joinGroupParams.getUnitType(),
-                    rpcClient.getAppName(transactionCmd.getRemoteKey()), joinGroupParams.getTransactionState());
+					SocketManager.getInstance().getModuleLabelName(transactionCmd.getRemoteKey()),
+					joinGroupParams.getTransactionState());
             txLogger.txTrace(transactionCmd.getGroupId(), joinGroupParams.getUnitId(), "unit:{} joined.",
                     joinGroupParams.getUnitId());
         } catch (TransactionException e) {

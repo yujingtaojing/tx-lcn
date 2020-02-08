@@ -15,18 +15,20 @@
  */
 package com.codingapi.txlcn.txmsg.netty.impl;
 
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
 import com.codingapi.txlcn.txmsg.RpcClient;
 import com.codingapi.txlcn.txmsg.dto.AppInfo;
 import com.codingapi.txlcn.txmsg.dto.MessageDto;
 import com.codingapi.txlcn.txmsg.dto.RpcCmd;
 import com.codingapi.txlcn.txmsg.dto.RpcResponseState;
 import com.codingapi.txlcn.txmsg.exception.RpcException;
-import com.codingapi.txlcn.txmsg.netty.bean.SocketManager;
 import com.codingapi.txlcn.txmsg.netty.bean.NettyRpcCmd;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import com.codingapi.txlcn.txmsg.netty.bean.SocketManager;
 
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Description:
@@ -92,10 +94,9 @@ public class NettyRpcClient extends RpcClient {
 
 
     @Override
-    public List<String> remoteKeys(String moduleName) {
-        return SocketManager.getInstance().removeKeys(moduleName);
+	public List<String> remoteKeys(String modId) {
+		return SocketManager.getInstance().remoteKeys(modId);
     }
-
 
     @Override
     public void bindAppName(String remoteKey, String appName,String labelName) throws RpcException {

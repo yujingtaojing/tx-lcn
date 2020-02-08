@@ -16,22 +16,31 @@
 package com.codingapi.txlcn.txmsg.netty.bean;
 
 
+import java.net.SocketAddress;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import com.codingapi.txlcn.txmsg.RpcConfig;
 import com.codingapi.txlcn.txmsg.dto.AppInfo;
 import com.codingapi.txlcn.txmsg.dto.MessageDto;
 import com.codingapi.txlcn.txmsg.dto.RpcCmd;
 import com.codingapi.txlcn.txmsg.dto.RpcResponseState;
 import com.codingapi.txlcn.txmsg.exception.RpcException;
+
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.extern.slf4j.Slf4j;
-
-import java.net.SocketAddress;
-import java.util.*;
-import java.util.concurrent.*;
 
 /**
  * Created by lorne on 2017/6/30.
@@ -172,10 +181,10 @@ public class SocketManager {
      * @param moduleName 模块名称
      * @return remoteKeys
      */
-    public List<String> removeKeys(String moduleName) {
+	public List<String> remoteKeys(String modId) {
         List<String> allKeys = new ArrayList<>();
         for (Channel channel : channels) {
-            if (moduleName.equals(getModuleName(channel))) {
+			if (modId.equals(getModuleLabelName(channel))) {
                 allKeys.add(channel.remoteAddress().toString());
             }
         }
@@ -227,6 +236,17 @@ public class SocketManager {
         return getModuleName(key);
     }
 
+	/**
+	 * 获取模块名称
+	 *
+	 * @param channel 管道信息
+	 * @return 模块名称
+	 */
+	public String getModuleLabelName(Channel channel) {
+		String key = channel.remoteAddress().toString();
+		return getModuleLabelName(key);
+	}
+
     /**
      * 获取模块名称
      *
@@ -237,6 +257,17 @@ public class SocketManager {
         AppInfo appInfo = appNames.get(remoteKey);
         return appInfo == null ? null : appInfo.getAppName();
     }
+
+	/**
+	 * 获取模块名称
+	 *
+	 * @param remoteKey 远程唯一标识
+	 * @return 模块名称
+	 */
+	public String getModuleLabelName(String remoteKey) {
+		AppInfo appInfo = appNames.get(remoteKey);
+		return appInfo == null ? null : appInfo.getLabelName();
+	}
 
     public List<AppInfo> appInfos() {
         return new ArrayList<>(appNames.values());
